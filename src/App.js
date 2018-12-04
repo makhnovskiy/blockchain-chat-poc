@@ -18,7 +18,8 @@ class App extends Component {
         super(props);
         this.state = {
             messages: [],
-            initialMessage: null
+            initialMessage: null,
+            isLoading: false
         };
         this._onMessageSubmit = this._onMessageSubmit.bind(this);
 
@@ -57,6 +58,9 @@ class App extends Component {
         e.stopPropagation();
         e.preventDefault();
 
+        this.setState({
+            isLoading: true
+        });
 
         let inputMessage = 'no message entered';
         if (e && e.target && e.target.message && e.target.message.value) {
@@ -68,6 +72,10 @@ class App extends Component {
         document.getElementById("messageForm").reset();
 
         let contractMessage = await this.contractSubmit(inputMessage);
+
+        this.setState({
+            isLoading: false
+        });
 
         let returnedMessage = null;
         if (contractMessage) {
@@ -96,7 +104,7 @@ class App extends Component {
     }
 
     render() {
-        let {messages, initialMessage} = this.state;
+        let {messages, initialMessage, isLoading} = this.state;
         let {_onMessageSubmit} = this;
 
         let messageComponent = null;
@@ -119,12 +127,20 @@ class App extends Component {
 
         }
 
+        let isLoadingComponent = null;
+
+        if (isLoading === true) {
+            isLoadingComponent = (
+                <div className={'verifyTransaction'}>Verifying Transaction... Please Wait! </div>
+            )
+        }
+
         return (
             <div className="App">
                 <header className="App-header">
                     <p>Blockchain Chatting System</p>
                 </header>
-
+                {isLoadingComponent}
                 <div className={'chatContent'}>
                     {messageComponent}
                 </div>
